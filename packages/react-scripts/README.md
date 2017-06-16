@@ -1,3 +1,5 @@
+**NOTE** `react-scripts` are adapted to include `css-modules` and the `stage-0`-preset for babel. They can be found in the `npm`-registry under `artirigo-react-scripts`.
+
 # react-scripts
 
 This package includes scripts and configuration used by [Create React App](https://github.com/facebookincubator/create-react-app).<br>

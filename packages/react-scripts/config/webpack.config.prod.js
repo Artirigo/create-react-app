@@ -175,9 +175,18 @@ module.exports = {
             options: {
               // @remove-on-eject-begin
               babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
+              presets: [require.resolve('babel-preset-react-app'), require.resolve('babel-preset-stage-0')],
               // @remove-on-eject-end
               compact: true,
+              plugins: [
+                'transform-decorators-legacy',
+                [
+                  'module-resolver',
+                  {
+                    root: ['./src'],
+                  },
+                ],
+              ],
             },
           },
           // The notation here is somewhat confusing.
@@ -205,6 +214,8 @@ module.exports = {
                         importLoaders: 1,
                         minimize: true,
                         sourceMap: true,
+                        modules: true,
+                        localIdentName: '[name].[contenthash].css',
                       },
                     },
                     {
