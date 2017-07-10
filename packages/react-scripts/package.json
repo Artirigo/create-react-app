@@ -1,6 +1,6 @@
 {
   "name": "artirigo-react-scripts",
-  "version": "1.0.14",
+  "version": "1.0.14-alpha",
   "description": "Configuration and scripts for Create React App, customized for Artirigo AG.",
   "repository": "facebookincubator/create-react-app",
   "license": "BSD-3-Clause",
