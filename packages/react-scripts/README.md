@@ -8,6 +8,11 @@
 They can be found in the `npm`-registry under `artirigo-react-scripts`.
 
 
+**VERSIONS**
+
+As the current version in the `package.json` already points to `v1.0.14` and is published to npm, we should install it from a feature branch until the original `react-scripts` are at `v1.0.15` and we can get back to the same versioning again.
+
+
 # react-scripts
 
 This package includes scripts and configuration used by [Create React App](https://github.com/facebookincubator/create-react-app).<br>
