@@ -215,7 +215,7 @@ module.exports = {
                         minimize: true,
                         sourceMap: true,
                         modules: true,
-                        localIdentName: '[name].[contenthash].css',
+                        localIdentName: '[name]__[local]___[hash:base64:5]',
                       },
                     },
                     {
