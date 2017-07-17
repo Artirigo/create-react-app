@@ -3,7 +3,8 @@
 `react-scripts` are adapted to
 
 - include `css-modules` and the `stage-0`-preset for babel.
-- fix [a bug with `style-loader` and `css-modules`](https://github.com/webpack-contrib/style-loader/issues/182).
+- fix [a bug with `style-loader` and `css-modules`](https://github.com/webpack-contrib/style-loader/issues/182),
+- include more PostCSS-plugins: `postcss-cssnext`, `postcss-focus`, `postcss-reporter`.
 
 They can be found in the `npm`-registry under `artirigo-react-scripts`.
 
