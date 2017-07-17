@@ -11,7 +11,6 @@
 'use strict';
 
 // PostCSS plugins
-const autoprefixer = require('autoprefixer');
 const cssnext = require('postcss-cssnext');
 const postcssReporter = require('postcss-reporter');
 
@@ -223,15 +222,6 @@ module.exports = {
                     require('postcss-focus'), // Add a :focus to every :hover
                     cssnext({ // Allow future CSS features to be used, also auto-prefixes the CSS...
                       browser: ['last 2 versions', 'IE > 10'], // ...based on this browser list
-                    }),
-                    autoprefixer({
-                      browsers: [
-                        '>1%',
-                        'last 4 versions',
-                        'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
-                      ],
-                      flexbox: 'no-2009',
                     }),
                     postcssReporter({ // Posts messages from plugins to the terminal
                       clearReportedMessages: true,
