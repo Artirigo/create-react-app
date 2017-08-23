@@ -32,6 +32,8 @@ const publicPath = paths.servedPath;
 // Some apps do not use client-side routing with pushState.
 // For these, "homepage" can be set to "." to enable relative asset paths.
 const shouldUseRelativeAssetPaths = publicPath === './';
+// Source maps are resource heavy and can cause out of memory issue for large source files.
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -65,7 +67,7 @@ module.exports = {
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
   // You can exclude the *.map files from the build during deployment.
-  devtool: 'source-map',
+  devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
   entry: [require.resolve('./polyfills'), paths.appIndexJs],
   output: {
@@ -91,7 +93,7 @@ module.exports = {
     // https://github.com/facebookincubator/create-react-app/issues/253
     modules: ['node_modules', paths.appNodeModules].concat(
       // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -107,7 +109,7 @@ module.exports = {
       // unfortunate to rely on, as react-scripts could be symlinked,
       // and thus babel-runtime might not be resolvable from the source.
       'babel-runtime': path.dirname(
-        require.resolve('babel-runtime/package.json')
+        require.resolve('babel-runtime/package.json'),
       ),
       // @remove-on-eject-end
       // Support React Native Web
@@ -120,7 +122,7 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(paths.appSrc),
+      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
     ],
   },
   module: {
@@ -178,7 +180,10 @@ module.exports = {
             options: {
               // @remove-on-eject-begin
               babelrc: false,
-              presets: [require.resolve('babel-preset-react-app'), require.resolve('babel-preset-stage-0')],
+              presets: [
+                require.resolve('babel-preset-react-app'),
+                require.resolve('babel-preset-stage-0'),
+              ],
               // @remove-on-eject-end
               compact: true,
               plugins: [
@@ -216,7 +221,7 @@ module.exports = {
                       options: {
                         importLoaders: 1,
                         minimize: true,
-                        sourceMap: true,
+                        sourceMap: shouldUseSourceMap,
                         modules: true,
                         localIdentName: '[name]_[local]_[hash:base64:5]',
                       },
@@ -230,19 +235,21 @@ module.exports = {
                         plugins: () => [
                           require('postcss-flexbugs-fixes'),
                           require('postcss-focus'), // Add a :focus to every :hover
-                          cssnext({ // Allow future CSS features to be used, also auto-prefixes the CSS...
+                          cssnext({
+                            // Allow future CSS features to be used, also auto-prefixes the CSS...
                             browser: ['last 2 versions', 'IE > 10'], // ...based on this browser list
-                          }),      
-                          postcssReporter({ // Posts messages from plugins to the terminal
+                          }),
+                          postcssReporter({
+                            // Posts messages from plugins to the terminal
                             clearReportedMessages: true,
-                          })      
+                          }),
                         ],
                       },
                     },
                   ],
                 },
-                extractTextPluginOptions
-              )
+                extractTextPluginOptions,
+              ),
             ),
             // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
           },
@@ -312,7 +319,7 @@ module.exports = {
         // https://github.com/facebookincubator/create-react-app/issues/2488
         ascii_only: true,
       },
-      sourceMap: true,
+      sourceMap: shouldUseSourceMap,
     }),
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
     new ExtractTextPlugin({
