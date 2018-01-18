@@ -13,6 +13,9 @@ const fs = require('fs');
 const chalk = require('chalk');
 const paths = require('../../config/paths');
 
+// old implementation: module.exports = 'IMAGE_MOCK';
+const IMAGE_MOCK = 'IMAGE_MOCK';
+
 module.exports = (resolve, rootDir, isEjecting) => {
   // Use this instead of `paths.testsSetup` to avoid putting
   // an absolute filename into configuration after ejecting.
@@ -39,9 +42,12 @@ module.exports = (resolve, rootDir, isEjecting) => {
       '^.+\\.css$': resolve('config/jest/cssTransform.js'),
       '^(?!.*\\.(js|jsx|css|json)$)': resolve('config/jest/fileTransform.js'),
     },
-    transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
+    // adapted
+    transformIgnorePatterns: ['"<rootDir>/node_modules/"', '^.+\\.css$'],
     moduleNameMapper: {
       '^react-native$': 'react-native-web',
+      '^.+\\.css$': 'identity-obj-proxy',
+      ".*\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": IMAGE_MOCK,
     },
     moduleFileExtensions: ['web.js', 'js', 'json', 'web.jsx', 'jsx', 'node'],
   };

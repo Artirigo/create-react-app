@@ -10,7 +10,10 @@
 // @remove-on-eject-end
 'use strict';
 
-const autoprefixer = require('autoprefixer');
+// PostCSS plugins
+const cssnext = require('postcss-cssnext');
+const postcssReporter = require('postcss-reporter');
+
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -174,12 +177,21 @@ module.exports = {
             options: {
               // @remove-on-eject-begin
               babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
+              presets: [require.resolve('babel-preset-react-app'), require.resolve('babel-preset-stage-0')],
               // @remove-on-eject-end
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
               // directory for faster rebuilds.
               cacheDirectory: true,
+              plugins: [
+                'transform-decorators-legacy',
+                [
+                  'module-resolver',
+                  {
+                    root: ['./src'],
+                  },
+                ],
+              ],
             },
           },
           // "postcss" loader applies autoprefixer to our CSS.
@@ -195,6 +207,8 @@ module.exports = {
                 loader: require.resolve('css-loader'),
                 options: {
                   importLoaders: 1,
+                  modules: true,
+                  localIdentName: '[local]__[path][name]__[hash:base64:5]',
                 },
               },
               {
@@ -205,15 +219,13 @@ module.exports = {
                   ident: 'postcss',
                   plugins: () => [
                     require('postcss-flexbugs-fixes'),
-                    autoprefixer({
-                      browsers: [
-                        '>1%',
-                        'last 4 versions',
-                        'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
-                      ],
-                      flexbox: 'no-2009',
+                    require('postcss-focus'), // Add a :focus to every :hover
+                    cssnext({ // Allow future CSS features to be used, also auto-prefixes the CSS...
+                      browser: ['last 2 versions', 'IE > 10'], // ...based on this browser list
                     }),
+                    postcssReporter({ // Posts messages from plugins to the terminal
+                      clearReportedMessages: true,
+                    })
                   ],
                 },
               },
@@ -253,7 +265,8 @@ module.exports = {
       template: paths.appHtml,
     }),
     // Add module names to factory functions so they appear in browser profiler.
-    new webpack.NamedModulesPlugin(),
+    // FIXME commented to fix https://github.com/webpack-contrib/style-loader/issues/182 
+    // new webpack.NamedModulesPlugin(),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
     new webpack.DefinePlugin(env.stringified),

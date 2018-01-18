@@ -10,7 +10,10 @@
 // @remove-on-eject-end
 'use strict';
 
-const autoprefixer = require('autoprefixer');
+// PostCSS plugins
+const cssnext = require('postcss-cssnext');
+const postcssReporter = require('postcss-reporter');
+
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -177,9 +180,21 @@ module.exports = {
             options: {
               // @remove-on-eject-begin
               babelrc: false,
-              presets: [require.resolve('babel-preset-react-app')],
+              presets: [
+                require.resolve('babel-preset-react-app'),
+                require.resolve('babel-preset-stage-0'),
+              ],
               // @remove-on-eject-end
               compact: true,
+              plugins: [
+                'transform-decorators-legacy',
+                [
+                  'module-resolver',
+                  {
+                    root: ['./src'],
+                  },
+                ],
+              ],
             },
           },
           // The notation here is somewhat confusing.
@@ -207,6 +222,8 @@ module.exports = {
                         importLoaders: 1,
                         minimize: true,
                         sourceMap: shouldUseSourceMap,
+                        modules: true,
+                        localIdentName: '[name]_[local]_[hash:base64:5]',
                       },
                     },
                     {
@@ -217,14 +234,14 @@ module.exports = {
                         ident: 'postcss',
                         plugins: () => [
                           require('postcss-flexbugs-fixes'),
-                          autoprefixer({
-                            browsers: [
-                              '>1%',
-                              'last 4 versions',
-                              'Firefox ESR',
-                              'not ie < 9', // React doesn't support IE8 anyway
-                            ],
-                            flexbox: 'no-2009',
+                          require('postcss-focus'), // Add a :focus to every :hover
+                          cssnext({
+                            // Allow future CSS features to be used, also auto-prefixes the CSS...
+                            browser: ['last 2 versions', 'IE > 10'], // ...based on this browser list
+                          }),
+                          postcssReporter({
+                            // Posts messages from plugins to the terminal
+                            clearReportedMessages: true,
                           }),
                         ],
                       },
